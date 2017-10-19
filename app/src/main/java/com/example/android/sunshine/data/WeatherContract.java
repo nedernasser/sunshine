@@ -54,7 +54,7 @@ public class WeatherContract {
         return time.setJulianDay(julianDay);
     }
 
-    /* Inner class that defines the contents of the location table */
+    /* Inner class that defines the table contents of the location table */
     public static final class LocationEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
@@ -130,8 +130,11 @@ public class WeatherContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        /*
+            Student: This is the buildWeatherLocation function you filled in.
+         */
         public static Uri buildWeatherLocation(String locationSetting) {
-            return null;
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
         }
 
         public static Uri buildWeatherLocationWithStartDate(
