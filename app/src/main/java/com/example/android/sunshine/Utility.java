@@ -27,14 +27,16 @@ public class Utility {
                 .equals(context.getString(R.string.pref_units_metric));
     }
 
-    static String formatTemperature(Context context, double temperature, boolean isMetric) {
-        double temp;
-        if ( !isMetric ) {
-            temp = 9*temperature/5+32;
-        } else {
-            temp = temperature;
+    public static String formatTemperature(Context context, double temperature) {
+        // Data stored in Celsius by default.  If user prefers to see in Fahrenheit, convert
+        // the values here.
+        String suffix = "\u00B0";
+        if (!isMetric(context)) {
+            temperature = (temperature * 1.8) + 32;
         }
-        return context.getString(R.string.format_temperature, temp);
+
+        // For presentation, assume the user doesn't care about tenths of a degree.
+        return String.format(context.getString(R.string.format_temperature), temperature);
     }
 
     static String formatDate(long dateInMilliseconds) {
@@ -107,6 +109,8 @@ public class Utility {
         } else if ( julianDay == currentJulianDay +1 ) {
             return context.getString(R.string.tomorrow);
         } else {
+            Time time = new Time();
+            time.setToNow();
             // Otherwise, the format is just the day of the week (e.g "Wednesday".
             SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
             return dayFormat.format(dateInMillis);
@@ -121,7 +125,10 @@ public class Utility {
      * @return The day in the form of a string formatted "December 6"
      */
     public static String getFormattedMonthDay(Context context, long dateInMillis ) {
-        SimpleDateFormat monthDayFormat = new SimpleDateFormat("EEE MMM dd");
+        Time time = new Time();
+        time.setToNow();
+        SimpleDateFormat dbDateFormat = new SimpleDateFormat(Utility.DATE_FORMAT);
+        SimpleDateFormat monthDayFormat = new SimpleDateFormat("MMMM dd");
         String monthDayString = monthDayFormat.format(dateInMillis);
         return monthDayString;
     }
@@ -168,32 +175,30 @@ public class Utility {
     public static int getIconResourceForWeatherCondition(int weatherId) {
         // Based on weather code data found at:
         // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
-        int response = -1;
-
         if (weatherId >= 200 && weatherId <= 232) {
-            response = R.drawable.ic_storm;
+            return R.drawable.ic_storm;
         } else if (weatherId >= 300 && weatherId <= 321) {
-            response = R.drawable.ic_light_rain;
+            return R.drawable.ic_light_rain;
         } else if (weatherId >= 500 && weatherId <= 504) {
-            response = R.drawable.ic_rain;
+            return R.drawable.ic_rain;
         } else if (weatherId == 511) {
-            response = R.drawable.ic_snow;
+            return R.drawable.ic_snow;
         } else if (weatherId >= 520 && weatherId <= 531) {
-            response = R.drawable.ic_rain;
+            return R.drawable.ic_rain;
         } else if (weatherId >= 600 && weatherId <= 622) {
-            response = R.drawable.ic_snow;
+            return R.drawable.ic_snow;
         } else if (weatherId >= 701 && weatherId <= 761) {
-            response = R.drawable.ic_fog;
+            return R.drawable.ic_fog;
         } else if (weatherId == 761 || weatherId == 781) {
-            response = R.drawable.ic_storm;
+            return R.drawable.ic_storm;
         } else if (weatherId == 800) {
-            response = R.drawable.ic_clear;
+            return R.drawable.ic_clear;
         } else if (weatherId == 801) {
-            response = R.drawable.ic_light_clouds;
+            return R.drawable.ic_light_clouds;
         } else if (weatherId >= 802 && weatherId <= 804) {
-            response = R.drawable.ic_cloudy;
+            return R.drawable.ic_cloudy;
         }
-        return response;
+        return -1;
     }
 
     /**
