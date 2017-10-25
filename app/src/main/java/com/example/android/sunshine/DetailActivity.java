@@ -137,15 +137,15 @@ public class DetailActivity extends ActionBarActivity {
             }
 
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-            mIconView = rootView.findViewById(R.id.detail_icon);
-            mDateView = rootView.findViewById(R.id.detail_date_textview);
-            mFriendlyDateView = rootView.findViewById(R.id.detail_day_textview);
-            mDescriptionView = rootView.findViewById(R.id.detail_forecast_textview);
-            mHighTempView = rootView.findViewById(R.id.detail_high_textview);
-            mLowTempView = rootView.findViewById(R.id.detail_low_textview);
-            mHumidityView = rootView.findViewById(R.id.detail_humidity_textview);
-            mWindView = rootView.findViewById(R.id.detail_wind_textview);
-            mPressureView = rootView.findViewById(R.id.detail_pressure_textview);
+            mIconView = (ImageView) rootView.findViewById(R.id.detail_icon);
+            mDateView = (TextView) rootView.findViewById(R.id.detail_date_textview);
+            mFriendlyDateView = (TextView) rootView.findViewById(R.id.detail_day_textview);
+            mDescriptionView = (TextView) rootView.findViewById(R.id.detail_forecast_textview);
+            mHighTempView = (TextView) rootView.findViewById(R.id.detail_high_textview);
+            mLowTempView = (TextView) rootView.findViewById(R.id.detail_low_textview);
+            mHumidityView = (TextView) rootView.findViewById(R.id.detail_humidity_textview);
+            mWindView = (TextView) rootView.findViewById(R.id.detail_wind_textview);
+            mPressureView = (TextView) rootView.findViewById(R.id.detail_pressure_textview);
             return rootView;
         }
 
@@ -224,12 +224,16 @@ public class DetailActivity extends ActionBarActivity {
                 mFriendlyDateView.setText(friendlyDateText);
                 mDateView.setText(dateText);
 
-                // Read description from cursor and update view
-                String description = data.getString(COL_WEATHER_DESC);
+                // Get description from weather condition ID
+                String description = Utility.getStringForWeatherCondition(getActivity(), weatherId);
                 mDescriptionView.setText(description);
+                mDescriptionView.setContentDescription(getString(R.string.a11y_forecast, description));
 
-                // For accessibility, add a content description to the icon field
-                mIconView.setContentDescription(description);
+                // For accessibility, add a content description to the icon field. Because the ImageView
+                // is independently focusable, it's better to have a description of the image. Using
+                // null is appropriate when the image is purely decorative or when the image already
+                // has text describing it in the same UI component.
+                mIconView.setContentDescription(getString(R.string.a11y_forecast_icon, description));
 
                 // Read high temperature from cursor and update view
                 boolean isMetric = Utility.isMetric(getActivity());
@@ -237,24 +241,29 @@ public class DetailActivity extends ActionBarActivity {
                 double high = data.getDouble(COL_WEATHER_MAX_TEMP);
                 String highString = Utility.formatTemperature(getActivity(), high);
                 mHighTempView.setText(highString);
+                mHighTempView.setContentDescription(getString(R.string.a11y_high_temp, highString));
 
                 // Read low temperature from cursor and update view
                 double low = data.getDouble(COL_WEATHER_MIN_TEMP);
                 String lowString = Utility.formatTemperature(getActivity(), low);
                 mLowTempView.setText(lowString);
+                mLowTempView.setContentDescription(getString(R.string.a11y_low_temp, lowString));
 
                 // Read humidity from cursor and update view
                 float humidity = data.getFloat(COL_WEATHER_HUMIDITY);
                 mHumidityView.setText(getActivity().getString(R.string.format_humidity, humidity));
+                mHumidityView.setContentDescription(mHumidityView.getText());
 
                 // Read wind speed and direction from cursor and update view
                 float windSpeedStr = data.getFloat(COL_WEATHER_WIND_SPEED);
                 float windDirStr = data.getFloat(COL_WEATHER_DEGREES);
                 mWindView.setText(Utility.getFormattedWind(getActivity(), windSpeedStr, windDirStr));
+                mWindView.setContentDescription(mWindView.getText());
 
                 // Read pressure from cursor and update view
                 float pressure = data.getFloat(COL_WEATHER_PRESSURE);
                 mPressureView.setText(getActivity().getString(R.string.format_pressure, pressure));
+                mPressureView.setContentDescription(mPressureView.getText());
 
                 // We still need this for the share intent
                 mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
