@@ -1,8 +1,20 @@
-package com.example.android.sunshine.gcm;
-
-/**
- * Created by Neder Nasser on 26/10/2017.
+/*
+ * Copyright (C) 2015 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
+package com.example.android.sunshine.gcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,6 +25,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.sunshine.MainActivity;
 import com.example.android.sunshine.R;
@@ -42,8 +55,13 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         // Time to unparcel the bundle!
         if (!data.isEmpty()) {
+            // TODO: gcm_default sender ID comes from the API console
+            String senderId = getString(R.string.gcm_defaultSenderId);
+            if (senderId.length() == 0) {
+                Toast.makeText(this, "SenderID string needs to be set", Toast.LENGTH_LONG).show();
+            }
             // Not a bad idea to check that the message is coming from your server.
-            if ((getString(R.string.gcm_defaultSenderId)).equals(from)) {
+            if ((senderId).equals(from)) {
                 // Process message and then post a notification of the received message.
                 try {
                     JSONObject jsonObject = new JSONObject(data.getString(EXTRA_DATA));

@@ -1,7 +1,4 @@
-package com.example.android.sunshine.gcm;
-
-/**
- /*
+/*
  * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +13,8 @@ package com.example.android.sunshine.gcm;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package com.example.android.sunshine.gcm;
 
 import android.content.Intent;
 import com.google.android.gms.iid.InstanceIDListenerService;
